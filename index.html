@@ -79,8 +79,8 @@
 <br>
         <!-- Tryby symulacji -->
         <label class="opcja"><input type="checkbox" id="WER" checked>Grawitacja</label>
-        <label class="opcja"><input type="checkbox" id="GR" checked>Brzegi</label>
-        <label class="opcja"><input type="checkbox" id="SLADY_ON" checked>Ślady</label>
+        <label class="opcja"><input type="checkbox" id="GR" checked>Brzeg</label>
+        <label class="opcja"><input type="checkbox" id="SLADY_ON" checked>Ślad</label>
         <label class="opcja"><input type="checkbox" id="TRYB_CIEMNY" onchange="FZmianaTla()" checked>Tło</label>
         <br>
         <!-- Suwak masy i wielkiego wybuchu -->
@@ -88,13 +88,13 @@
             <input type="range" id="idMAS" min="10" max="500" value="50" oninput="FMasa()"> 
             <span id="idMASL">50</span>
         </span>
-
+		<br>
 		<span class="opcja">Ilość:
 			<input type="range" id="idBUM" min="10" max="300" value="100" oninput="FBum()"> 
 			<span id="idILE">100</span>
 		</span>
 		<br>
-		<span class="opcja">Supernowa: 
+		<span class="opcja">Max: 
 			<input type="range" id="idPROG_SUWAK" min="300" max="5000" step="100" value="1500" oninput="FAktualizujProg()"> 
 			<span id="idPROG_WARTOSC">1500</span>
 		</span>
