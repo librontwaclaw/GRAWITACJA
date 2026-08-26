@@ -119,7 +119,10 @@ function animacja() {
 	// ==================================================
 
 	var g = document.getElementById("WER").checked;
-	if (g == false) {
+	if (g == true) {
+		Verlet();
+	} else {
+		
 		ObliczZderzenia();
 		for (var i = 0; i < PLANETY.length; i++){
 			PLANETY[i].x += PLANETY[i].vx;
@@ -132,8 +135,6 @@ function animacja() {
 			}
 			Planeta(PLANETY[i]);
 		}
-	} else {
-		Verlet();
 	}
 	
 	// Czyszczenie wywołujemy tylko wtedy, gdy supernowa nie przeprowadza właśnie narodzin odłamków
