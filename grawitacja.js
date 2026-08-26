@@ -119,7 +119,7 @@ function animacja() {
 	// ==================================================
 
 	var g = document.getElementById("WER").checked;
-	if (g == true) {
+	if (g == false) {
 		ObliczZderzenia();
 		for (var i = 0; i < PLANETY.length; i++){
 			PLANETY[i].x += PLANETY[i].vx;
@@ -555,4 +555,19 @@ function FZmianaTla() {
 	}
 	// Czyścimy warstwę śladów, aby natychmiast pozbyć się starego koloru smug
 	GR_SLADY.clearRect(0, 0, w, h);
+}
+
+// Funkcja obsługująca przyciski zoomu na telefonach
+function FZoomMobilny(mnoznik) {
+	// Mnożymy aktualną skalę przez zadany współczynnik
+	skala *= mnoznik;
+
+	// Pilnujemy zdefiniowanych wcześniej limitów min/max
+	if (skala < minSkala) skala = minSkala;
+	if (skala > maxSkala) skala = maxSkala;
+
+	// Czyścimy warstwę śladów, aby stare ogony planet nie rozmazały się w złych miejscach
+	if (typeof GR_SLADY !== 'undefined') {
+		GR_SLADY.clearRect(0, 0, w, h);
+	}
 }

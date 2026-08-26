@@ -60,7 +60,7 @@
 
     <div id="panel-sterowania">
         <!-- Tryby symulacji -->
-        <label class="opcja"><input type="checkbox" id="WER" >Grawitacja (Zderzenia)</label>
+        <label class="opcja"><input type="checkbox" id="WER" checked>Grawitacja (Zderzenia)</label>
         <label class="opcja"><input type="checkbox" id="GR" checked>Brzegi</label>
         <label class="opcja"><input type="checkbox" id="SLADY_ON" checked>Ślady</label>
         <label class="opcja"><input type="checkbox" id="TRYB_CIEMNY" onchange="FZmianaTla()" checked>Tło</label>
@@ -88,7 +88,13 @@
         <option value="supernowa">Supernowa</option>
     </select>
 
-    <button onclick="LosujPlanety()">BUM</button>
+    <button onclick="LosujPlanety() " style="font-weight:bold; padding: 5px 12px; font-size: 16px;">BUM</button>
+	<span class="opcja" style="white-space: nowrap;">
+     
+    <button onclick="FZoomMobilny(1.2)" style="font-weight:bold; padding: 5px 12px; font-size: 16px;">[ + ]</button>
+    Zoom
+	<button onclick="FZoomMobilny(0.8)" style="font-weight:bold; padding: 5px 12px; font-size: 16px;">[ - ]</button>
+</span>
 </span>
 
         
