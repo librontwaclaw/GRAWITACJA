@@ -58,7 +58,13 @@
 </head>
 <body>
 
-    <div id="panel-sterowania">
+    <!-- Obszar symulacji (Rozmiary 800x600 dopasowane do skryptu grawitacja.js) -->
+    <div class="canvas-kontener">
+        <canvas id="canvasSlady" width="600" height="800"></canvas>
+        <canvas id="canvasPlanety" width="600" height="800"></canvas>
+    </div>
+
+<div id="panel-sterowania">
         <!-- Tryby symulacji -->
         <label class="opcja"><input type="checkbox" id="WER" checked>Grawitacja (Zderzenia)</label>
         <label class="opcja"><input type="checkbox" id="GR" checked>Brzegi</label>
@@ -110,13 +116,6 @@
 
     </div>
 
-    <br>
-
-    <!-- Obszar symulacji (Rozmiary 800x600 dopasowane do skryptu grawitacja.js) -->
-    <div class="canvas-kontener">
-        <canvas id="canvasSlady" width="600" height="800"></canvas>
-        <canvas id="canvasPlanety" width="600" height="800"></canvas>
-    </div>
 
     <!-- Skrypty sterujące mechaniką i fizyką układu -->
     <script src="grawitacja.js"></script>
