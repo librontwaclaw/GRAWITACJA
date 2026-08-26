@@ -91,9 +91,12 @@
     <button onclick="LosujPlanety() " style="font-weight:bold; padding: 5px 12px; font-size: 16px;">BUM</button>
 	<span class="opcja" style="white-space: nowrap;">
      
-    <button onclick="FZoomMobilny(1.2)" style="font-weight:bold; padding: 5px 12px; font-size: 16px;">[ + ]</button>
+<span class="opcja" style="white-space: nowrap;">
+    <button id="btnZoomPlus" style="font-weight:bold; padding: 5px 12px; font-size: 16px;">[ + ]</button>
     Zoom
-	<button onclick="FZoomMobilny(0.8)" style="font-weight:bold; padding: 5px 12px; font-size: 16px;">[ - ]</button>
+	<button id="btnZoomMinus" style="font-weight:bold; padding: 5px 12px; font-size: 16px;">[ - ]</button>
+</span>
+    
 </span>
 </span>
 
@@ -358,6 +361,22 @@ function AktualizujRozmiarOkna() {
         GR_SLADY.clearRect(0, 0, w, h);
     }
 }
+// Bezpieczna obsługa przycisków dla komputera i telefonu
+document.getElementById("btnZoomPlus").addEventListener('touchend', function(e) {
+    e.preventDefault();
+    FZoomMobilny(1.2);
+}, false);
+document.getElementById("btnZoomPlus").addEventListener('click', function() {
+    FZoomMobilny(1.2);
+}, false);
+
+document.getElementById("btnZoomMinus").addEventListener('touchend', function(e) {
+    e.preventDefault();
+    FZoomMobilny(0.8);
+}, false);
+document.getElementById("btnZoomMinus").addEventListener('click', function() {
+    FZoomMobilny(0.8);
+}, false);
 
 // Wywołanie przy starcie i przy obracaniu telefonu
 window.addEventListener('resize', AktualizujRozmiarOkna);
