@@ -57,8 +57,8 @@
 
     <div id="panel-sterowania">
         <!-- Tryby symulacji -->
-        <label class="opcja"><input type="checkbox" id="WER" >Zderzenia-Grawitacja</label>
-        <label class="opcja"><input type="checkbox" id="GR" checked>Odbicia</label>
+        <label class="opcja"><input type="checkbox" id="WER" >Grawitacja (Zderzenia)</label>
+        <label class="opcja"><input type="checkbox" id="GR" checked>Brzegi</label>
         <label class="opcja"><input type="checkbox" id="SLADY_ON" checked>Ślady</label>
         <label class="opcja"><input type="checkbox" id="TRYB_CIEMNY" onchange="FZmianaTla()" checked>Czarne tło</label>
         <br>
@@ -95,7 +95,7 @@
     Laser: <span id="idLASER">0</span> | 
     Gwiazdy: <span id="idKULE">0</span> |
     Masa max: <span id="idMAX_MASA" style="font-weight: bold; color: #e74c3c;">0</span> / <span id="idPROG_SUPERNOVA" style="font-weight: bold; color: #2c3e50;">1500</span>
-</div>
+		</div>
 
     </div>
 
@@ -195,10 +195,26 @@ var czyPrzeciagaKamere = false; // Flaga sprawdzająca, czy użytkownik trzyma k
 
         // Uruchomienie pętli głównej po załadowaniu skryptów
 window.onload = function() {
+// 1. Najpierw pobieramy rozmiary ekranu i elementy
+    w = window.innerWidth;
+    h = window.innerHeight - 150;
+    
+    var c_planety = document.getElementById("canvasPlanety");
+    if (c_planety) { c_planety.width = w; c_planety.height = h; }
+    
+    var c_slady = document.getElementById("canvasSlady");
+    if (c_slady) { c_slady.width = w; c_slady.height = h; }
+
+    FAktualizujProg(); // <-- NOWOŚĆ: Synchronizacja suwaka progu na starcie
+	// ---> NOWOŚĆ: Wymuszenie wyboru trybu Supernowej w menu przy starcie <---
+    var menuTypBum = document.getElementById("idTYP_BUM");
+    if (menuTypBum) {
+        menuTypBum.value = "supernowa"; // Przełączamy listę rozwijaną na supernową
+    }
     FMasa();
     FBum();
-    FAktualizujProg(); // <-- NOWOŚĆ: Synchronizacja suwaka progu na starcie
-    animacja();
+	LosujPlanety();
+	animacja();
 };
 
 // Obsługa klawisza spacji do włączania i wyłączania pauzy

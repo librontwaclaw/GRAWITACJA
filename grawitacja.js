@@ -486,7 +486,7 @@ function AktualizujSupernowa() {
 		// Generowanie nowych, małych odłamków, które dołączą do starych planet!
 		for (var i = 0; i < ileOdlamkow; i++) {
 			var kat = (i / ileOdlamkow) * 2 * Math.PI; 
-			var silaWyrzutu = (losowa(30, 90) / 10); 
+			var silaWyrzutu = (losowa(25, 60) / 10); 
 			
 			var m_losowa = losowa(12, 35); 
 			var r_losowy = m_losowa / 10;
