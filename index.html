@@ -65,6 +65,18 @@
     </div>
 
 <div id="panel-sterowania">
+
+<span class="opcja" style="white-space: nowrap;">
+    <select id="idTYP_BUM">
+        <option value="rozproszona">Chaos</option>
+        <option value="supernowa">Bum</option>
+    </select>
+    <button onclick="LosujPlanety() " style="font-weight:bold; padding: 5px 12px; font-size: 16px;">BUM</button>
+	
+	<button onclick="FZoomMobilny(1.2)" id="btnZoomPlus" style="font-weight:bold; padding: 5px 12px; font-size: 16px;">[ + ]</button>
+	<button onclick="FZoomMobilny(0.8)" id="btnZoomMinus" style="font-weight:bold; padding: 5px 12px; font-size: 16px;">[ - ]</button>
+</span>
+<br>
         <!-- Tryby symulacji -->
         <label class="opcja"><input type="checkbox" id="WER" checked>Grawitacja</label>
         <label class="opcja"><input type="checkbox" id="GR" checked>Brzegi</label>
@@ -81,28 +93,14 @@
 			<input type="range" id="idBUM" min="10" max="300" value="100" oninput="FBum()"> 
 			<span id="idILE">100</span>
 		</span>
-		
+		<br>
 		<span class="opcja">Supernowa: 
 			<input type="range" id="idPROG_SUWAK" min="300" max="5000" step="100" value="1500" oninput="FAktualizujProg()"> 
 			<span id="idPROG_WARTOSC">1500</span>
 		</span>
 		<br>
     
-    <!-- NOWOŚĆ: Wybór rodzaju wybuchu -->
-    <select id="idTYP_BUM">
-        <option value="rozproszona">Chaos</option>
-        <option value="supernowa">Bum</option>
-    </select>
-
-    <button onclick="LosujPlanety() " style="font-weight:bold; padding: 5px 12px; font-size: 16px;">BUM</button>
-	<span class="opcja" style="white-space: nowrap;">
-     
-<span class="opcja" style="white-space: nowrap;">
-    <button onclick="FZoomMobilny(1.2)" id="btnZoomPlus" style="font-weight:bold; padding: 5px 12px; font-size: 16px;">[ + ]</button>
-	<button onclick="FZoomMobilny(0.8)" id="btnZoomMinus" style="font-weight:bold; padding: 5px 12px; font-size: 16px;">[ - ]</button>
-</span>
-    
-</span>
+   
 </span>
 
         
