@@ -302,6 +302,27 @@ c_planety.addEventListener('touchend', function(evt) {
     MyszPrzycisk = -1; // Wystrzelenie nowej planety laserem
 }, { passive: false });
 
+// Dynamiczna aktualizacja rozmiaru canvasu przy zmianie okna przeglądarki
+window.addEventListener('resize', function() {
+    // 1. Pobieramy nowe, aktualne wymiary okna
+    w = window.innerWidth;
+    h = window.innerHeight - 150; // Zostawiamy 150px na panel sterowania
+
+    // 2. Aktualizujemy atrybuty szerokości i wysokości obu płócien
+    if (c_planety) {
+        c_planety.width = w;
+        c_planety.height = h;
+    }
+    if (c_slady) {
+        c_slady.width = w;
+        c_slady.height = h;
+    }
+
+    // 3. WAŻNE: Czyścimy warstwę śladów, aby uniknąć błędów rozciągania grafiki
+    if (typeof GR_SLADY !== 'undefined') {
+        GR_SLADY.clearRect(0, 0, w, h);
+    }
+}, false);
 
     </script>
 </body>
