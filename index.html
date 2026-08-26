@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
+    <title>Symulator Grawitacyjny 2D</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #f0f0f0;
+            margin: 20px;
+            user-select: none;
+        }
+        #panel-sterowania {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+        .opcja {
+            margin-right: 15px;
+            font-weight: bold;
+        }
+        /* Kontener nakładający dwa Canvasy dokładnie na siebie */
+        .canvas-kontener {
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            border-radius: 4px;
+            overflow: hidden;
+            display: inline-block;
+        }
+        /* Spodnia warstwa na ślady */
+        #canvasSlady {
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: 1;
+            background: white; /* Tło całego symulatora */
+        }
+        /* Wierzchnia warstwa na planety i celownik myszy */
+        #canvasPlanety {
+            position: relative;
+            z-index: 2;
+            background: transparent; /* Przezroczyste, by było widać warstwę pod spodem */
+            cursor: crosshair;
+        }
+        .statystyki {
+            margin-top: 10px;
+            font-size: 13px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="panel-sterowania">
+        <!-- Tryby symulacji -->
+        <label class="opcja"><input type="checkbox" id="WER" >Zderzenia-Grawitacja</label>
+        <label class="opcja"><input type="checkbox" id="GR" checked>Odbicia</label>
+        <label class="opcja"><input type="checkbox" id="SLADY_ON" checked>Ślady</label>
+        <label class="opcja"><input type="checkbox" id="TRYB_CIEMNY" onchange="FZmianaTla()" checked>Czarne tło</label>
+        <br>
+        <!-- Suwak masy i wielkiego wybuchu -->
+        <span class="opcja">Masa: 
+            <input type="range" id="idMAS" min="10" max="500" value="50" oninput="FMasa()"> 
+            <span id="idMASL">50</span>
+        </span>
+
+		<span class="opcja">Ilość:
+			<input type="range" id="idBUM" min="10" max="300" value="100" oninput="FBum()"> 
+			<span id="idILE">100</span>
+		</span>
+		
+		<span class="opcja">Supernowa: 
+			<input type="range" id="idPROG_SUWAK" min="300" max="5000" step="100" value="1500" oninput="FAktualizujProg()"> 
+			<span id="idPROG_WARTOSC">1500</span>
+		</span>
+		<br>
+    
+    <!-- NOWOŚĆ: Wybór rodzaju wybuchu -->
+    <select id="idTYP_BUM">
+        <option value="rozproszona">Chaos</option>
+        <option value="supernowa">Supernowa</option>
+    </select>
+
+    <button onclick="LosujPlanety()">BUM</button>
+</span>
+
+        
+        <!-- Statystyki i diagnostyka -->
+        <div class="statystyki">
+    Myszka: <span id="TEST">(0,0)</span> | 
+    Laser: <span id="idLASER">0</span> | 
+    Gwiazdy: <span id="idKULE">0</span> |
+    Masa max: <span id="idMAX_MASA" style="font-weight: bold; color: #e74c3c;">0</span> / <span id="idPROG_SUPERNOVA" style="font-weight: bold; color: #2c3e50;">1500</span>
+</div>
+
+    </div>
+
+    <br>
+
+    <!-- Obszar symulacji (Rozmiary 800x600 dopasowane do skryptu grawitacja.js) -->
+    <div class="canvas-kontener">
+        <canvas id="canvasSlady" width="800" height="600"></canvas>
+        <canvas id="canvasPlanety" width="800" height="600"></canvas>
+    </div>
+
+    <!-- Skrypty sterujące mechaniką i fizyką układu -->
+    <script src="grawitacja.js"></script>
+    <script>
+        // Inicjalizacja wymiarów i pobranie kontekstów graficznych
+// Zamiast: var w = 800; var h = 600;
+// Wpisz dynamiczne dopasowanie do całego dostępnego ekranu telefonu:
+var w = window.innerWidth;
+var h = window.innerHeight - 150; // Odejmujemy 150px na panel sterowania, by zmieścił się nad lub pod grą
+
+// Aktualizujemy rozmiary w obu Canvasach w locie
+var c_planety = document.getElementById("canvasPlanety");
+c_planety.width = w;
+c_planety.height = h;
+
+var c_slady = document.getElementById("canvasSlady");
+c_slady.width = w;
+c_slady.height = h;
+
+
+var skala = 1.0;       // 1.0 = standard, 0.5 = oddalenie (2x więcej świata), 2.0 = przybliżenie
+var minSkala = 0.1;    // Maksymalne oddalenie
+var maxSkala = 5.0;    // Maksymalne przybliżenie
+// Zmienne pozycji kamery w nieskończonym świecie
+var kameraX = 0; 
+var kameraY = 0;
+var czyPrzeciagaKamere = false; // Flaga sprawdzająca, czy użytkownik trzyma klawisz do przesuwania
+
+        // Główny canvas (wierzchni - planety)
+        var c_planety = document.getElementById("canvasPlanety");
+        var GR = c_planety.getContext("2d");
+
+        // Zoptymalizowany canvas (spodni - ślady)
+        var c_slady = document.getElementById("canvasSlady");
+        var GR_SLADY = c_slady.getContext("2d");
+
+        // Stałe konfiguracyjne dla silnika fizycznego Verlet / Euler
+        var G = 1;       // Stała grawitacji
+        var dt = 0.1;    // Dokładność czasu (krok integracji)
+        var skok = 1;   // Odświeżanie animacji w milisekundach (~50 FPS)
+        var czas;        // Zmienna przechowująca referencję do pętli setTimeout
+
+        // Struktury danych dla obiektów
+        var PLANETY = [];
+        var PLANETA = { x: 0, y: 0, vx: 0, vy: 0, r: 0, k: "black" };
+        
+        // Zarządzanie stanem myszki
+        var MYSZKA = { x: 0, y: 0 };
+        var MYSZKAon = { x: 0, y: 0 };
+        var MYSZKAoff = { x: 0, y: 0 };
+        var MyszPrzycisk = 0;
+
+        // Skróty do elementów UI
+        var idMAS = document.getElementById("idMAS");
+        var idMASL = document.getElementById("idMASL");
+        var idBUM = document.getElementById("idBUM");
+        var idILE = document.getElementById("idILE");
+        var idKULE = document.getElementById("idKULE");
+        var idLASER = document.getElementById("idLASER");
+
+        // Obsługa zdarzeń myszy przypisana do wierzchniej warstwy interaktywnej
+		c_planety.addEventListener('mousemove', function(evt) {
+            var rect = c_planety.getBoundingClientRect();
+            var ekranX = evt.clientX - rect.left;
+            var ekranY = evt.clientY - rect.top;
+
+            // Odwracamy transformację zoomu, aby uzyskać współrzędne świata fizyki
+            var srodekX = w / 2;
+            var srodekY = h / 2;
+            MYSZKA.x = Math.round(srodekX + (ekranX - srodekX) / skala);
+            MYSZKA.y = Math.round(srodekY + (ekranY - srodekY) / skala);
+        }, false);
+
+
+
+        c_planety.addEventListener('mousedown', function(evt) {
+            MyszPrzycisk = 1;
+            MYSZKAon.x = MYSZKA.x;
+            MYSZKAon.y = MYSZKA.y;
+        }, false);
+
+        c_planety.addEventListener('mouseup', function(evt) {
+            MyszPrzycisk = -1;
+            MYSZKAoff.x = MYSZKA.x;
+            MYSZKAoff.y = MYSZKA.y;
+        }, false);
+
+        // Uruchomienie pętli głównej po załadowaniu skryptów
+window.onload = function() {
+    FMasa();
+    FBum();
+    FAktualizujProg(); // <-- NOWOŚĆ: Synchronizacja suwaka progu na starcie
+    animacja();
+};
+
+// Obsługa klawisza spacji do włączania i wyłączania pauzy
+window.addEventListener('keydown', function(evt) {
+    // Sprawdzamy czy wciśnięto spację (kod 32 lub .key === ' ')
+    if (evt.key === ' ' || evt.keyCode === 32) {
+        evt.preventDefault(); // Zabezpieczenie: spacja nie będzie przewijać strony w dół
+        pauza = !pauza;       // Odwracamy stan (true staje się false, false staje się true)
+    }
+}, false);
+// Obsługa kółka myszy do przybliżania i oddalania widoku
+// Obsługa kółka myszy do przybliżania i oddalania widoku
+c_planety.addEventListener('wheel', function(evt) {
+    evt.preventDefault(); // Zabezpieczenie: strona nie będzie się przewijać
+
+    // Kierunek scrolla: deltaY > 0 oznacza kręcenie w dół (oddalanie)
+    if (evt.deltaY > 0) {
+        skala *= 0.9; // Pomniejsz widok o 10%
+    } else {
+        skala *= 1.1; // Powiększ widok o 10%
+    }
+
+    // Blokada limitów zoomu
+    if (skala < minSkala) skala = minSkala;
+    if (skala > maxSkala) skala = maxSkala;
+
+    // WAŻNE: Czyścimy warstwę śladów przy zmianie skali, 
+    // aby stare ogony planet nie "zostały" w złych miejscach ekranu
+    if (typeof GR_SLADY !== 'undefined') {
+        GR_SLADY.clearRect(0, 0, w, h);
+    }
+}, { passive: false });
+
+// Pomocnicza funkcja wyciągająca współrzędne dotknięcia
+function pobierzDotyk(evt, rect) {
+    var touch = evt.touches[0] || evt.changedTouches[0];
+    return {
+        x: Math.round(touch.clientX - rect.left),
+        y: Math.round(touch.clientY - rect.top)
+    };
+}
+
+// Obsługa dotknięcia ekranu (odpowiednik mousedown)
+c_planety.addEventListener('touchstart', function(evt) {
+    evt.preventDefault(); // Blokuje domyślne przewijanie strony palcem
+    var rect = c_planety.getBoundingClientRect();
+    var pos = pobierzDotyk(evt, rect);
+
+    // Na telefonie jedno dotknięcie domyślnie stawia planetę (MyszPrzycisk = 1)
+    MyszPrzycisk = 1;
+    
+    // Przeliczenie pozycji na współrzędne świata z uwzględnieniem zoomu i kamery
+    var srodekX = w / 2;
+    var srodekY = h / 2;
+    MYSZKA.x = Math.round(srodekX + (pos.x - srodekX) / skala + kameraX);
+    MYSZKA.y = Math.round(srodekY + (pos.y - srodekY) / skala + kameraY);
+    
+    MYSZKAon.x = MYSZKA.x;
+    MYSZKAon.y = MYSZKA.y;
+}, { passive: false });
+
+// Obsługa przesuwania palca (odpowiednik mousemove)
+c_planety.addEventListener('touchmove', function(evt) {
+    evt.preventDefault();
+    var rect = c_planety.getBoundingClientRect();
+    var pos = pobierzDotyk(evt, rect);
+
+    var srodekX = w / 2;
+    var srodekY = h / 2;
+    MYSZKA.x = Math.round(srodekX + (pos.x - srodekX) / skala + kameraX);
+    MYSZKA.y = Math.round(srodekY + (pos.y - srodekY) / skala + kameraY);
+}, { passive: false });
+
+// Obsługa puszczenia palca (odpowiednik mouseup)
+c_planety.addEventListener('touchend', function(evt) {
+    evt.preventDefault();
+    var rect = c_planety.getBoundingClientRect();
+    var pos = pobierzDotyk(evt, rect);
+
+    var srodekX = w / 2;
+    var srodekY = h / 2;
+    MYSZKAoff.x = Math.round(srodekX + (pos.x - srodekX) / skala + kameraX);
+    MYSZKAoff.y = Math.round(srodekY + (pos.y - srodekY) / skala + kameraY);
+    
+    MyszPrzycisk = -1; // Wystrzelenie nowej planety laserem
+}, { passive: false });
+
+
+    </script>
+</body>
+</html>
