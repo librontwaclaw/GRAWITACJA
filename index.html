@@ -327,6 +327,36 @@ window.addEventListener('resize', function() {
     }
 }, false);
 
+function AktualizujRozmiarOkna() {
+    // Bezpieczne pobieranie wysokości ekranu dla urządzeń mobilnych
+    w = window.innerWidth;
+    h = window.innerHeight - 120; // Zmniejszony margines na panel sterowania
+
+    var c_planety = document.getElementById("canvasPlanety");
+    if (c_planety) {
+        c_planety.width = w;          // Rozdzielczość wewnętrzna (fizyka)
+        c_planety.height = h;
+        c_planety.style.width = w + "px";   // Wygląd w CSS (ekran telefonu)
+        c_planety.style.height = h + "px";
+    }
+    
+    var c_slady = document.getElementById("canvasSlady");
+    if (c_slady) {
+        c_slady.width = w;
+        c_slady.height = h;
+        c_slady.style.width = w + "px";
+        c_slady.style.height = h + "px";
+    }
+
+    if (typeof GR_SLADY !== 'undefined') {
+        GR_SLADY.clearRect(0, 0, w, h);
+    }
+}
+
+// Wywołanie przy starcie i przy obracaniu telefonu
+window.addEventListener('resize', AktualizujRozmiarOkna);
+window.addEventListener('orientationchange', AktualizujRozmiarOkna);
+
     </script>
 </body>
 </html>
