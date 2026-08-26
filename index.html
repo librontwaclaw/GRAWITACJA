@@ -25,12 +25,15 @@
         }
         /* Kontener nakładający dwa Canvasy dokładnie na siebie */
         .canvas-kontener {
-            position: relative;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-            border-radius: 4px;
-            overflow: hidden;
-            display: inline-block;
-        }
+    position: relative;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    border-radius: 4px;
+    overflow: hidden;
+    display: inline-block;
+    /* POPRAWKA: Kontener dopasowuje się do elastycznego okna */
+    width: 100%; 
+    height: auto; 
+}
         /* Spodnia warstwa na ślady */
         #canvasSlady {
             position: absolute;
@@ -60,7 +63,7 @@
         <label class="opcja"><input type="checkbox" id="WER" >Grawitacja (Zderzenia)</label>
         <label class="opcja"><input type="checkbox" id="GR" checked>Brzegi</label>
         <label class="opcja"><input type="checkbox" id="SLADY_ON" checked>Ślady</label>
-        <label class="opcja"><input type="checkbox" id="TRYB_CIEMNY" onchange="FZmianaTla()" checked>Czarne tło</label>
+        <label class="opcja"><input type="checkbox" id="TRYB_CIEMNY" onchange="FZmianaTla()" checked>Tło</label>
         <br>
         <!-- Suwak masy i wielkiego wybuchu -->
         <span class="opcja">Masa: 
@@ -103,8 +106,8 @@
 
     <!-- Obszar symulacji (Rozmiary 800x600 dopasowane do skryptu grawitacja.js) -->
     <div class="canvas-kontener">
-        <canvas id="canvasSlady" width="800" height="600"></canvas>
-        <canvas id="canvasPlanety" width="800" height="600"></canvas>
+        <canvas id="canvasSlady" width="600" height="800"></canvas>
+        <canvas id="canvasPlanety" width="600" height="800"></canvas>
     </div>
 
     <!-- Skrypty sterujące mechaniką i fizyką układu -->
@@ -196,8 +199,8 @@ var czyPrzeciagaKamere = false; // Flaga sprawdzająca, czy użytkownik trzyma k
         // Uruchomienie pętli głównej po załadowaniu skryptów
 window.onload = function() {
 // 1. Najpierw pobieramy rozmiary ekranu i elementy
-    w = window.innerWidth;
-    h = window.innerHeight - 150;
+    w = window.innerWidth - 40;
+    h = window.innerHeight - 205;
     
     var c_planety = document.getElementById("canvasPlanety");
     if (c_planety) { c_planety.width = w; c_planety.height = h; }
@@ -305,8 +308,8 @@ c_planety.addEventListener('touchend', function(evt) {
 // Dynamiczna aktualizacja rozmiaru canvasu przy zmianie okna przeglądarki
 window.addEventListener('resize', function() {
     // 1. Pobieramy nowe, aktualne wymiary okna
-    w = window.innerWidth;
-    h = window.innerHeight - 150; // Zostawiamy 150px na panel sterowania
+    w = window.innerWidth - 40;
+    h = window.innerHeight - 205; // Zostawiamy 150px na panel sterowania
 
     // 2. Aktualizujemy atrybuty szerokości i wysokości obu płócien
     if (c_planety) {
