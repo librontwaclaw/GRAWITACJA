@@ -154,6 +154,73 @@ canvas {
     z-index: 2;
 }
 
+/* Przycisk "I" w lewym górnym rogu ekranu */
+#przyciskInfo {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 9998;
+    background: #9b59b6; /* Elegancki fioletowy kolor, aby odróżniał się od MENU */
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 50%; /* Idealne koło */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#przyciskInfo:active {
+    background: #8e44ad;
+}
+
+/* Wyskakujące okienko Informacji */
+#oknoInfo {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #1e272e;
+    color: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    border: 2px solid #9b59b6; /* Fioletowa ramka pasująca do przycisku */
+    box-shadow: 0px 10px 30px rgba(0,0,0,0.8);
+    z-index: 9999;
+    width: 85%;
+    max-width: 380px;
+    display: none; /* Domyślnie ukryte */
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+#oknoInfo h3 {
+    margin-top: 0;
+    color: #9b59b6;
+    font-size: 22px;
+    border-bottom: 2px solid #34495e;
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+}
+
+/* Formatowanie listy wewnątrz info */
+#oknoInfo ul {
+    padding-left: 20px;
+    margin: 10px 0;
+}
+
+#oknoInfo li, #oknoInfo p {
+    color: #dcdde1;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 8px;
+}
 
     </style>
 </head>
@@ -528,5 +595,29 @@ canvasEkran.addEventListener("mouseup", function(e) {
 
 
     </script>
+	
+	<!-- Stały, okrągły przycisk INFO po lewej stronie ekranu -->
+<button id="przyciskInfo" onclick="OtworzInfo()">I</button>
+
+<!-- Okno z informacjami o programie -->
+<div id="oknoInfo">
+    <button onclick="ZamknijInfo()" style="float: right; background: #e74c3c; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">X</button>
+    
+    <h3>O programie</h3>
+    <div class="tresc-info">
+        <p><strong>Symulator Grawitacji</strong></p>
+        <p>Interaktywny model fizyczny oparty na całkowaniu metodą <em>Velocity Verlet</em> oraz fuzji ciał niebieskich.</p>
+        
+        <h4 style="color: #3498db; margin-top: 15px; margin-bottom: 5px;">Sterowanie:</h4>
+        <ul>
+            <li><strong>Przeciągnij myszą/palcem:</strong> Tworzy nową planetę i nadaje jej prędkość początkową (laser).</li>
+            <li><strong>Przycisk MENU:</strong> Pozwala zmieniać parametry symulacji (masę, ślady, wybuchy).</li>
+            <li><strong>Supernowa:</strong> Gdy planeta przekroczy masę krytyczną, następuje implozja jądra i efektowny wybuch!</li>
+        </ul>
+        
+        <p style="text-align: center; margin-top: 20px; font-size: 12px; color: #7f8c8d;">Twórca: Libront Wacław© & AI 2026</p>
+    </div>
+</div>
+
 </body>
 </html>

@@ -716,3 +716,24 @@ function PrzeliczWspolrzedneMyszy(e, canvasElement) {
 	
 	return { x: fizyczneX, y: fizyczneY };
 }
+// Otwiera okno informacyjne i włącza pauzę
+function OtworzInfo() {
+	var info = document.getElementById("oknoInfo");
+	if (info) {
+		// Na wszelki wypadek zamykamy główne menu, jeśli było otwarte
+		var menu = document.getElementById("mobilneMenu");
+		if (menu) menu.style.display = "none";
+		
+		info.style.display = "block";
+		pauza = true; // Zatrzymujemy symulację w tle
+	}
+}
+
+// Zamyka okno informacyjne i wyłącza pauzę
+function ZamknijInfo() {
+	var info = document.getElementById("oknoInfo");
+	if (info) {
+		info.style.display = "none";
+		pauza = false; // Kosmos rusza dalej
+	}
+}
