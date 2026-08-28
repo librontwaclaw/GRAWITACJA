@@ -95,6 +95,35 @@
     display: none; /* Domyślnie schowane */
     box-sizing: border-box;
 }
+/* Pełny ekran bez suwaków i marginesów */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Ukrywa paski przewijania */
+    background: #0d1117; /* Domyślne, ciemne kosmiczne tło strony */
+}
+
+/* Pozycjonowanie obu płócien idealnie na sobie */
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    box-sizing: border-box;
+}
+
+
+/* Przypisanie warstw: ślady pod spodem, główny canvas nad nim */
+#canvasSlady {
+    z-index: 1;
+}
+#canvasGłówny { /* Upewnij się, że Twój górny canvas ma odpowiednie ID */
+    z-index: 2;
+}
 
 
     </style>
@@ -266,7 +295,7 @@ var czyPrzeciagaKamere = false; // Flaga sprawdzająca, czy użytkownik trzyma k
 window.onload = function() {
 // 1. Najpierw pobieramy rozmiary ekranu i elementy
     w = window.innerWidth - 40;
-    h = window.innerHeight - 205;
+    h = window.innerHeight ;
     
     var c_planety = document.getElementById("canvasPlanety");
     if (c_planety) { c_planety.width = w; c_planety.height = h; }
@@ -375,7 +404,7 @@ c_planety.addEventListener('touchend', function(evt) {
 window.addEventListener('resize', function() {
     // 1. Pobieramy nowe, aktualne wymiary okna
     w = window.innerWidth - 40;
-    h = window.innerHeight - 205; // Zostawiamy 150px na panel sterowania
+    h = window.innerHeight ; // Zostawiamy 150px na panel sterowania
 
     // 2. Aktualizujemy atrybuty szerokości i wysokości obu płócien
     if (c_planety) {
@@ -396,7 +425,7 @@ window.addEventListener('resize', function() {
 function AktualizujRozmiarOkna() {
     // Bezpieczne pobieranie wysokości ekranu dla urządzeń mobilnych
     w = window.innerWidth;
-    h = window.innerHeight - 120; // Zmniejszony margines na panel sterowania
+    h = window.innerHeight; // Zmniejszony margines na panel sterowania
 
     var c_planety = document.getElementById("canvasPlanety");
     if (c_planety) {
@@ -435,9 +464,39 @@ document.getElementById("btnZoomMinus").addEventListener('click', function() {
     FZoomMobilny(0.8);
 }, false);
 
+
+
 // Wywołanie przy starcie i przy obracaniu telefonu
 window.addEventListener('resize', AktualizujRozmiarOkna);
 window.addEventListener('orientationchange', AktualizujRozmiarOkna);
+
+// Przykład dla przesunięcia myszy (celowanie laserem)
+canvasEkran.addEventListener("mousemove", function(e) {
+	var pozycja = PrzeliczWspolrzedneMyszy(e, this);
+	MYSZKA.x = pozycja.x;
+	MYSZKA.y = pozycja.y;
+});
+
+// Przykład dla naciśnięcia (początek linii strzału)
+canvasEkran.addEventListener("mousedown", function(e) {
+	if (e.button === 0) { // Lewy przycisk myszy
+		var pozycja = PrzeliczWspolrzedneMyszy(e, this);
+		MYSZKAon.x = pozycja.x;
+		MYSZKAon.y = pozycja.y;
+		MyszPrzycisk = 1;
+	}
+});
+
+// Przykład dla puszczenia (wystrzelenie planety)
+canvasEkran.addEventListener("mouseup", function(e) {
+	if (MyszPrzycisk === 1) {
+		var pozycja = PrzeliczWspolrzedneMyszy(e, this);
+		MYSZKAoff.x = pozycja.x;
+		MYSZKAoff.y = pozycja.y;
+		MyszPrzycisk = -1;
+	}
+});
+
 
     </script>
 </body>

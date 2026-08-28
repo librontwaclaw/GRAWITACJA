@@ -217,23 +217,29 @@ function Planeta(planetaObj) {
 }
 
 
-
 function ObslugaMyszki(){
 	if (MyszPrzycisk == 1){
-		LINIA(MYSZKAon.x, MYSZKAon.y, MYSZKA.x, MYSZKA.y, "red");
-		//PLANETA.x = MYSZKAon.x;
-		//PLANETA.y = MYSZKAon.y;
+		// Przeliczamy pozycje fizyczne na aktualne piksele ekranu, aby linia pokrywała się z myszką
+		var srodekX = w / 2;
+		var srodekY = h / 2;
 		
-		// Wklej to (odwrócenie transformacji ekranowej na fizyczną):
-var srodekX = w / 2;
-var srodekY = h / 2;
-PLANETA.x = srodekX + (MYSZKAon.x - srodekX) / skala;
-PLANETA.y = srodekY + (MYSZKAon.y - srodekY) / skala;
-
+		var ekranOnX = srodekX + (MYSZKAon.x - srodekX) * skala;
+		var ekranOnY = srodekY + (MYSZKAon.y - srodekY) * skala;
+		var ekranMyszX = srodekX + (MYSZKA.x - srodekX) * skala;
+		var ekranMyszY = srodekY + (MYSZKA.y - srodekY) * skala;
+		
+		// Rysujemy linię na ekranie
+		LINIA(ekranOnX, ekranOnY, ekranMyszX, ekranMyszY, "red");
+		
+		// Przypisanie parametrów dla nowej planety (współrzędne fizyczne)
+		PLANETA.x = MYSZKAon.x;
+		PLANETA.y = MYSZKAon.y;
 		PLANETA.r = idMAS.value / 10;
 		PLANETA.m = idMAS.value * 1.0;
 	}
+	
 	if (MyszPrzycisk == -1){
+		// Obliczanie prędkości na bazie fizycznych współrzędnych świata
 		PLANETA.vx = (MYSZKAoff.x - MYSZKAon.x) / 20;
 		PLANETA.vy = (MYSZKAoff.y - MYSZKAon.y) / 20;
 		MyszPrzycisk = 0;
@@ -241,11 +247,11 @@ PLANETA.y = srodekY + (MYSZKAon.y - srodekY) / skala;
 		idKULE.innerHTML = PLANETY.length;
 	}
 	
-	// Podgląd tworzonej planety pod kursorem myszy
 	if (MyszPrzycisk == 1 || MyszPrzycisk == 0) {
 		Planeta(PLANETA);
 	}
 }
+
 
 // Zarządzanie masą w UI
 function FMasa(){
@@ -641,15 +647,67 @@ function OtworzMenu() {
 	var menu = document.getElementById("mobilneMenu");
 	if (menu) {
 		menu.style.display = "block";
-		pauza = true; // Twoja globalna zmienna pauzy zatrzyma fizykę
+		pauza = true; // Zatrzymuje fizykę, ale nie dotyka wymiarów okna!
 	}
 }
 
-// Zamyka menu i wznawia symulację
 function ZamknijMenu() {
 	var menu = document.getElementById("mobilneMenu");
 	if (menu) {
 		menu.style.display = "none";
-		pauza = false; // Wznawiamy działanie programu
+		pauza = false; // Wznawia fizykę
 	}
+}
+
+
+
+function DopasujDoEkranu() {
+	// 1. Pobieramy aktualne wymiary okna Windows
+	w = window.innerWidth;
+	h = window.innerHeight;
+
+	// 2. Pobieramy wszystkie canvasy i wymuszamy ich fizyczny rozmiar
+	var wszystkieCanvasy = document.getElementsByTagName("canvas");
+	for (var i = 0; i < wszystkieCanvasy.length; i++) {
+		wszystkieCanvasy[i].width = w;
+		wszystkieCanvasy[i].height = h;
+	}
+
+	// 3. KLUCZOWE DLA WINDOWS: Odświeżamy zmienne kontekstu graficznego (GR i GR_SLADY),
+	// ponieważ przeglądarki resetują je po zmianie atrybutów .width/.height canvasu.
+	var c_glowny = document.getElementById("canvasGłówny") || wszystkieCanvasy[0];
+	var c_slady = document.getElementById("canvasSlady") || wszystkieCanvasy[1];
+	
+	if (c_glowny && typeof c_glowny.getContext === 'function') GR = c_glowny.getContext("2d");
+	if (c_slady && typeof c_slady.getContext === 'function') GR_SLADY = c_slady.getContext("2d");
+
+	// 4. Czyszczenie warstwy śladów po zmianie rozmiaru okna
+	if (GR_SLADY && GR_SLADY.clearRect) {
+		GR_SLADY.clearRect(0, 0, w, h);
+	}
+}
+
+// Obsługa natychmiastowego skalowania w systemie Windows
+window.removeEventListener("resize", DopasujDoEkranu);
+window.addEventListener("resize", DopasujDoEkranu);
+
+// Wywołanie startowe
+DopasujDoEkranu();
+
+function PrzeliczWspolrzedneMyszy(e, canvasElement) {
+	// 1. Pobieramy realną pozycję canvasu na ekranie
+	var rect = canvasElement.getBoundingClientRect();
+	
+	// 2. Wyliczamy pozycję na canvasie (w pikselach ekranu)
+	var ekranX = e.clientX - rect.left;
+	var ekranY = e.clientY - rect.top;
+	
+	// 3. ODKODOWANIE SKALI: Przeliczamy pozycję ekranową na fizyczną pozycję w świecie symulacji
+	var srodekX = w / 2;
+	var srodekY = h / 2;
+	
+	var fizyczneX = srodekX + (ekranX - srodekX) / skala;
+	var fizyczneY = srodekY + (ekranY - srodekY) / skala;
+	
+	return { x: fizyczneX, y: fizyczneY };
 }
