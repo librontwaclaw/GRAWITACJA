@@ -4,7 +4,7 @@ var supernowaPromien = 100; // Rozmiar startowy przed zapadnięciem
 var supernowaMasa = 5000;   // Ogromna masa ściągająca wszystko do środka
 var supernowaX = 0; // <-- NOWOŚĆ: stała pozycja X eksplozji
 var supernowaY = 0; // <-- NOWOŚĆ: stała pozycja Y eksplozji
-// Zmienne kontrolne dla animowanej supernowej
+var predkoscRozpryskuMax = 6.0; // Zmienne kontrolne dla animowanej supernowej
 var MASA_KRYTYCZNA = 1500;  // <-- NOWOŚĆ: Masa potrzebna do wywołania kolejnego wybuchu
 var idMAX_MASA = document.getElementById("idMAX_MASA");
 var pauza = false; // <-- NOWOŚĆ: Stan pauzy symulatora
@@ -162,8 +162,6 @@ if (PLANETY[i].y > maxY) { PLANETY[i].y = maxY; PLANETY[i].vy = -PLANETY[i].vy; 
 	czas = setTimeout(animacja, skok); 
 }
 
-
-
 function TestowanieMyszki(){	
 	document.getElementById('TEST').innerHTML = 
 	"(" + MYSZKA.x + "," + MYSZKA.y + ") " +
@@ -216,7 +214,6 @@ function Planeta(planetaObj) {
 	GR.fill();
 }
 
-
 function ObslugaMyszki(){
 	if (MyszPrzycisk == 1){
 		// Przeliczamy pozycje fizyczne na aktualne piksele ekranu, aby linia pokrywała się z myszką
@@ -251,7 +248,6 @@ function ObslugaMyszki(){
 		Planeta(PLANETA);
 	}
 }
-
 
 // Zarządzanie masą w UI
 function FMasa(){
@@ -447,7 +443,6 @@ function Zderzenia(d, i, j){
 	}
 }
 
-
 // Bezpieczne usuwanie planet
 function CzyscPlanety(){
 	for (var i = PLANETY.length - 1; i >= 0; i--){
@@ -507,7 +502,6 @@ function LosujPlanety(){
 	ZamknijMenu(); 
 }
 
-
 function AktualizujSupernowa() {
 	// Jeśli tryb nie jest aktywny lub gwiazda z jakiegoś powodu zniknęła – przerywamy
 	if (!supernowaAktywna || PLANETY.length === 0) return;
@@ -524,28 +518,54 @@ function AktualizujSupernowa() {
 	if (supernowaPromien < 80 && supernowaPromien >= 40) gwiazdaObj.k = "#e67e22"; // Pomarańczowy
 	if (supernowaPromien < 40) gwiazdaObj.k = "#f1c40f"; // Żółty biały żar
 
-	// MOMENT KRYTYCZNY: Gwiazda osiąga punkt zero - czas na BUM!
+		// MOMENT KRYTYCZNY: Gwiazda osiąga punkt zero - czas na BUM!
+		// MOMENT KRYTYCZNY: Gwiazda osiąga punkt zero - czas na BUM!
 		// MOMENT KRYTYCZNY: Gwiazda osiąga punkt zero - czas na BUM!
 	if (supernowaPromien <= 4) {
 		supernowaAktywna = false; // Koniec fali implozji
 		
-		var ileOdlamkow = parseInt(idBUM.value); 
 		var srodekX = gwiazdaObj.x; 
 		var srodekY = gwiazdaObj.y; 
+		var calkowitaMasaGwiazdy = gwiazdaObj.m; // Łączna masa do podziału
 		
-		// POPRAWKA: Usuwamy TYLKO gwiazdę centralną (pierwszy element z tablicy)
+		// 1. ODCZYT MAKSYMALNEJ MASY ODŁAMKA Z TWOJEGO SUWAKA
+		var suwakMasaUI = document.getElementById("idMAS");
+		var maxMasaOdlamka = suwakMasaUI ? parseFloat(suwakMasaUI.value) : 100;
+		
+		// Zabezpieczenie minimalne (żeby nie dzielić przez zero lub skrajnie małe liczby)
+		if (maxMasaOdlamka < 5) maxMasaOdlamka = 5; 
+
+		// Usuwamy gwiazdę centralną z tablicy
 		PLANETY.shift(); 
 		
-		// Generowanie nowych, małych odłamków, które dołączą do starych planet!
-		for (var i = 0; i < ileOdlamkow; i++) {
-			var kat = (i / ileOdlamkow) * 2 * Math.PI; 
-			var silaWyrzutu = (losowa(25, 60) / 10); 
+		var pozostalaMasa = calkowitaMasaGwiazdy;
+		var licznikBezpieczeństwa = 0;
+
+		// 2. GENEROWANIE ODŁAMKÓW W PĘTLI AŻ SKOŃCZY SIĘ MASA GWIAZDY
+		while (pozostalaMasa > 0 && licznikBezpieczeństwa < 400) {
+			licznikBezpieczeństwa++;
 			
-			var m_losowa = losowa(12, 35); 
+			// Losujemy masę dla tego konkretnego odłamka (od 20% do 100% wartości z suwaka MASA)
+			var minMasa = maxMasaOdlamka * 0.2;
+			var m_losowa = minMasa + (Math.random() * (maxMasaOdlamka - minMasa));
+			
+			// Jeśli wylosowana masa jest większa niż to, co zostało z gwiazdy – bierzemy resztę
+			if (m_losowa > pozostalaMasa || pozostalaMasa - m_losowa < minMasa) {
+				m_losowa = pozostalaMasa;
+			}
+			
+			pozostalaMasa -= m_losowa; // Odejmujemy wydzieloną masę od puli supernowej
+
+			// Promień odłamka wyliczany standardowo z jego losowej masy
 			var r_losowy = m_losowa / 10;
 			if (r_losowy <= 0.5) r_losowy = 0.5;
 
-			var losowyPromienStartowy = losowa(50, 110);
+			// Kąt i siła wyrzutu szczątków
+			var kat = Math.random() * 2 * Math.PI;
+			var minSila = predkoscRozpryskuMax * 0.2;
+			var silaWyrzutu = minSila + (Math.random() * (predkoscRozpryskuMax - minSila)); 
+
+			var losowyPromienStartowy = losowa(30, 90);
 			var startX = srodekX + Math.cos(kat) * losowyPromienStartowy;
 			var startY = srodekY + Math.sin(kat) * losowyPromienStartowy;
 
@@ -558,7 +578,7 @@ function AktualizujSupernowa() {
 				ay: 0,
 				old_ax: 0,   
 				old_ay: 0,   
-				m: m_losowa,
+				m: m_losowa, // Przypisujemy realną, urwaną masę
 				r: r_losowy
 			};
 			
@@ -566,7 +586,6 @@ function AktualizujSupernowa() {
 			var jestCiemneTlo = elementTlo ? elementTlo.checked : false;
 			PL.k = jestCiemneTlo ? "#ecf0f1" : "black"; 
 
-			// Odłamki zostają DOPISANE do tablicy, mieszając się ze starymi planetami
 			PLANETY.push(PL);
 		}
 		
@@ -574,7 +593,6 @@ function AktualizujSupernowa() {
 	}
 
 }
-
 
 function FBum(){
 	idILE.innerHTML = idBUM.value;
@@ -644,8 +662,8 @@ function WyczyscWszystko() {
 	// 5. Resetujemy statystykę maksymalnej masy w UI
 	var idMAX_MASA = document.getElementById("idMAX_MASA");
 	if (idMAX_MASA) idMAX_MASA.innerHTML = 0;
+	ZamknijMenu();
 }
-
 
 // Otwiera menu i włącza pauzę, żeby kosmos "nie uciekał" podczas konfiguracji
 function OtworzMenu() {
@@ -663,8 +681,6 @@ function ZamknijMenu() {
 		pauza = false; // Wznawia fizykę
 	}
 }
-
-
 
 function DopasujDoEkranu() {
 	// 1. Pobieramy aktualne wymiary okna Windows
@@ -737,3 +753,59 @@ function ZamknijInfo() {
 		pauza = false; // Kosmos rusza dalej
 	}
 }
+
+function FAktualizujPredkoscRozprysku() {
+	var suwak = document.getElementById("idPREDKOSC_SUWAK");
+	var tekstWartosc = document.getElementById("idPREDKOSC_WARTOSC");
+	
+	if (suwak) {
+		// Aktualizujemy zmienną globalną (zamieniamy tekst na liczbę zmiennoprzecinkową)
+		predkoscRozpryskuMax = parseFloat(suwak.value);
+		
+		// Aktualizujemy tekst etykiety w menu
+		if (tekstWartosc) tekstWartosc.innerHTML = predkoscRozpryskuMax.toFixed(1);
+	}
+}
+
+// Zmienne pomocnicze chroniące ślady przed czyszczeniem przy fałszywym resize
+var ostatnieW = 0;
+var ostatnieH = 0;
+
+function DopasujDoEkranu() {
+	var obecneW = window.innerWidth;
+	var obecneH = window.innerHeight;
+
+	// Jeśli wymiary się nie zmieniły (np. tylko otwarto menu), nie dotykamy bufora canvasów!
+	if (obecneW === ostatnieW && obecneH === ostatnieH) {
+		return; 
+	}
+
+	w = obecneW;
+	h = obecneH;
+	ostatnieW = obecneW;
+	ostatnieH = obecneH;
+
+	var wszystkieCanvasy = document.getElementsByTagName("canvas");
+	for (var i = 0; i < wszystkieCanvasy.length; i++) {
+		wszystkieCanvasy[i].width = w;
+		wszystkieCanvasy[i].height = h;
+	}
+
+	var c_glowny = document.getElementById("canvasGłówny") || wszystkieCanvasy[0];
+	var c_slady = document.getElementById("canvasSlady") || wszystkieCanvasy[1];
+	
+	if (c_glowny && typeof c_glowny.getContext === 'function') GR = c_glowny.getContext("2d");
+	if (c_slady && typeof c_slady.getContext === 'function') GR_SLADY = c_slady.getContext("2d");
+
+	if (GR_SLADY && GR_SLADY.clearRect) {
+		GR_SLADY.clearRect(0, 0, w, h);
+	}
+}
+
+// Obsługa natychmiastowego skalowania w systemie Windows
+window.removeEventListener("resize", DopasujDoEkranu);
+window.addEventListener("resize", DopasujDoEkranu);
+
+// === WYWOŁANIA STARTOWE PO URUCHOMIENIU PROGRAMU ===
+DopasujDoEkranu();
+FAktualizujPredkoscRozprysku(); // <-- ROZWIĄZANIE: Pobiera startową wartość z suwaka zaraz po włączeniu gry!
