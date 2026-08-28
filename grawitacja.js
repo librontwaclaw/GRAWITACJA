@@ -460,6 +460,7 @@ function losowa(p, k) {
 }
 
 // Generator Wybuchów
+// Generator Wybuchów
 function LosujPlanety(){
 	var ile = idBUM.value;
 	PLANETY.length = 0;
@@ -501,7 +502,11 @@ function LosujPlanety(){
 		};
 		PLANETY.push(superGwiazda);
 	}
+
+	// <-- NOWOŚĆ: Automatyczne zamknięcie menu i wznowienie fizyki po kliknięciu BUM
+	ZamknijMenu(); 
 }
+
 
 function AktualizujSupernowa() {
 	// Jeśli tryb nie jest aktywny lub gwiazda z jakiegoś powodu zniknęła – przerywamy

@@ -78,23 +78,52 @@
 }
 
 /* Styl dla wyskakującego okna menu */
+/* Nowy, kontrastowy styl dla wyskakującego okna menu */
 #mobilneMenu {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(24, 30, 39, 0.95); /* Bardzo ciemny granat, pasujący do kosmosu */
-    color: #ecf0f1;
-    padding: 20px;
+    background: #1e272e; /* Głęboki, elegancki grafit (ciemniejszy i bardziej jednolity) */
+    color: #ffffff;      /* Maksymalnie biały, wyraźny tekst główny */
+    padding: 25px;
     border-radius: 12px;
-    border: 1px solid #34495e;
-    box-shadow: 0px 10px 30px rgba(0,0,0,0.7);
-    z-index: 9999; /* Zawsze najwyższa warstwa */
+    border: 2px solid #3498db; /* Wyraźna, jasnoniebieska ramka wokół menu */
+    box-shadow: 0px 10px 30px rgba(0,0,0,0.8);
+    z-index: 9999;
     width: 85%;
     max-width: 360px;
-    display: none; /* Domyślnie schowane */
     box-sizing: border-box;
+    font-family: sans-serif;
 }
+
+/* Styl dla nagłówka w menu */
+#mobilneMenu h3 {
+    margin-top: 0;
+    color: #54a0ff;    /* Jasny, wyraźny błękit dla tytułu */
+    font-size: 22px;
+    border-bottom: 2px solid #34495e;
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+}
+
+/* Styl dla etykiet tekstowych, opisów suwaków i statystyk wewnątrz menu */
+#mobilneMenu label, 
+#mobilneMenu span, 
+#mobilneMenu p,
+#mobilneMenu div {
+    color: #000000;    /* czarny */
+    font-size: 15px;
+    font-weight: bold; /* Pogrubienie tekstów, aby były lepiej widoczne na ekranie telefonu */
+    line-height: 1.6;
+}
+
+/* Dodatkowo: styl dla wartości liczbowych obok suwaków (jeśli ich używasz) */
+#mobilneMenu strong,
+#mobilneMenu b {
+    color: #f1c40f;    /* Jaskrawy żółty dla liczb/wartości suwaków, żeby rzucały się w oczy */
+}
+
 /* Pełny ekran bez suwaków i marginesów */
 html, body {
     margin: 0;
@@ -155,7 +184,7 @@ canvas {
         <option value="supernowa">Bum</option>
     </select>
     <button onclick="LosujPlanety() " style="font-weight:bold; padding: 5px 12px; font-size: 16px;">BUM</button>
-	
+	<br>
 	<button onclick="FZoomMobilny(1.2)" id="btnZoomPlus" style="font-weight:bold; padding: 5px 12px; font-size: 16px;">[ + ]</button>
 	<button onclick="FZoomMobilny(0.8)" id="btnZoomMinus" style="font-weight:bold; padding: 5px 12px; font-size: 16px;">[ - ]</button>
 	<button onclick="WyczyscWszystko()" style="font-weight:bold; padding: 5px 12px; font-size: 16px;">C</button>
