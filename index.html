@@ -221,9 +221,47 @@ canvas {
     line-height: 1.5;
     margin-bottom: 8px;
 }
+/* Panel statystyk na ekranie głównym */
+#panelStatystyk {
+    position: fixed;
+    bottom: 15px;
+    left: 15px;
+    z-index: 9990; /* Nad kosmosem, ale pod oknami menu */
+    background: rgba(13, 17, 23, 0.65); /* Półprzezroczyste, ciemne tło */
+    border: 1px solid rgba(52, 152, 219, 0.3); /* Delikatna niebieska ramka */
+    padding: 10px 15px;
+    border-radius: 8px;
+    backdrop-filter: blur(4px); /* Efekt rozmycia tła pod tekstem (bardzo nowoczesny) */
+    font-family: 'Courier New', Courier, monospace; /* Czcionka techniczna/komputerowa */
+    pointer-events: none; /* Kliknięcia przechodzą PRZEZ panel, więc można pod nim tworzyć planety! */
+}
+
+/* Wygląd poszczególnych linii tekstu */
+#panelStatystyk div {
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: bold;
+    margin: 3px 0;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+}
+
+/* Wyróżnienie jaskrawym kolorem dynamicznych wartości liczbowych */
+#panelStatystyk strong {
+    color: #f1c40f; /* Żółty kolor dla liczb */
+}
 
     </style>
 </head>
+
+<!-- Stały panel statystyk w lewym dolnym rogu ekranu -->
+<div id="panelStatystyk">
+    <div>Wyrzutnia: <strong id="idLASER">0</strong></div>
+    <div>Planety: <strong id="idKULE">0</strong></div>
+    <div>Masa maks.: <strong id="idMAX_MASA">0</strong></div>
+    <div>Próg supernowej: <strong id="idPROG_SUPERNOVA">1500</strong></div>
+    <div style="display:none;">Laser/Myszka: <span id="idLASER">0</span> <span id="TEST"></span></div>
+</div>
+
 <body>
 
     <!-- Obszar symulacji (Rozmiary 800x600 dopasowane do skryptu grawitacja.js) -->
@@ -286,13 +324,14 @@ canvas {
 
         
         <!-- Statystyki i diagnostyka -->
-        <div class="statystyki">
+<!--    
+    <div class="statystyki">
     Myszka: <span id="TEST">(0,0)</span> | 
     Laser: <span id="idLASER">0</span> | 
     Gwiazdy: <span id="idKULE">0</span> |
     Masa max: <span id="idMAX_MASA" style="font-weight: bold; color: #e74c3c;">0</span> / <span id="idPROG_SUPERNOVA" style="font-weight: bold; color: #2c3e50;">1500</span>
 		</div>
-
+-->
     </div>
 	
 </div>
