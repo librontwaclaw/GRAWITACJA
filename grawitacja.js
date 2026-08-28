@@ -635,40 +635,21 @@ function WyczyscWszystko() {
 	if (idMAX_MASA) idMAX_MASA.innerHTML = 0;
 }
 
-// Zmienne do rozróżnienia kliknięcia od przeciągnięcia
-var czasStartuDotyku = 0;
 
-// Podepnij zdarzenie kliknięcia/tapnięcia pod główny canvas (zakładam, że nazywa się canvas)
-var canvasEkran = document.getElementById("canvasSlady") || document.getElementsByTagName("canvas")[0];
-
-if (canvasEkran) {
-    canvasEkran.addEventListener("mousedown", function(e) {
-        czasStartuDotyku = Date.now();
-    });
-
-    canvasEkran.addEventListener("mouseup", function(e) {
-        var czasTrwania = Date.now() - czasStartuDotyku;
-        
-        // Jeśli kliknięcie trwało krócej niż 200ms, traktujemy to jako zwykłe stuknięcie (TAP)
-        if (czasTrwania < 200 && MyszPrzycisk === 0) {
-            OtworzMenu();
-        }
-    });
-}
-
+// Otwiera menu i włącza pauzę, żeby kosmos "nie uciekał" podczas konfiguracji
 function OtworzMenu() {
-    var menu = document.getElementById("mobilneMenu");
-    if (menu) {
-        menu.style.display = "block";
-        pauza = true; // Opcjonalnie: zatrzymujemy symulację, gdy gracz konfiguruje opcje
-    }
+	var menu = document.getElementById("mobilneMenu");
+	if (menu) {
+		menu.style.display = "block";
+		pauza = true; // Twoja globalna zmienna pauzy zatrzyma fizykę
+	}
 }
 
-function ZamknijMenu(e) {
-    if (e) e.stopPropagation(); // Blokuje aktywację kliknięcia pod menu
-    var menu = document.getElementById("mobilneMenu");
-    if (menu) {
-        menu.style.display = "none";
-        pauza = false; // Wznawiamy fizykę po zamknięciu menu
-    }
+// Zamyka menu i wznawia symulację
+function ZamknijMenu() {
+	var menu = document.getElementById("mobilneMenu");
+	if (menu) {
+		menu.style.display = "none";
+		pauza = false; // Wznawiamy działanie programu
+	}
 }
