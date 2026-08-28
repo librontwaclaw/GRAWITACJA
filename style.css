@@ -1,0 +1,245 @@
+body {
+	font-family: sans-serif;
+	background: #f0f0f0;
+	margin: 20px;
+	user-select: none;
+}
+#panel-sterowania {
+	background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin-bottom: 15px;
+    display: inline-block;
+}
+.opcja {
+	margin-right: 15px;
+    font-weight: bold;
+}
+		
+/* Kontener nakładający dwa Canvasy dokładnie na siebie */
+.canvas-kontener {
+    position: relative;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    border-radius: 4px;
+    overflow: hidden;
+    display: inline-block;
+    /* POPRAWKA: Kontener dopasowuje się do elastycznego okna */
+    width: 100%; 
+    height: auto; 
+}
+/* Spodnia warstwa na ślady */
+#canvasSlady {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 1;
+    background: white; /* Tło całego symulatora */
+}
+/* Wierzchnia warstwa na planety i celownik myszy */
+#canvasPlanety {
+    position: relative;
+    z-index: 2;
+    background: transparent; /* Przezroczyste, by było widać warstwę pod spodem */
+    cursor: crosshair;
+}
+.statystyki {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #555;
+}
+		
+/* Styl dla małego przycisku w rogu */
+#przyciskMenuGlowne {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 9998; /* Pod oknem menu, ale nad kosmosem */
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent; /* Usuwa niebieski błysk na telefonach */
+}
+
+#przyciskMenuGlowne:active {
+    background: #2980b9;
+}
+
+/* Styl dla wyskakującego okna menu */
+/* Nowy, kontrastowy styl dla wyskakującego okna menu */
+#mobilneMenu {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #1e272e; /* Głęboki, elegancki grafit (ciemniejszy i bardziej jednolity) */
+    color: #ffffff;      /* Maksymalnie biały, wyraźny tekst główny */
+    padding: 10px;
+    border-radius: 12px;
+    border: 2px solid #3498db; /* Wyraźna, jasnoniebieska ramka wokół menu */
+    box-shadow: 0px 10px 30px rgba(0,0,0,0.8);
+    z-index: 9999;
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+/* Styl dla nagłówka w menu */
+#mobilneMenu h3 {
+    margin-top: 0;
+    color: #54a0ff;    /* Jasny, wyraźny błękit dla tytułu */
+    font-size: 22px;
+    border-bottom: 2px solid #34495e;
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+}
+
+/* Styl dla etykiet tekstowych, opisów suwaków i statystyk wewnątrz menu */
+#mobilneMenu label, 
+#mobilneMenu span, 
+#mobilneMenu p,
+#mobilneMenu div {
+    color: #000000;    /* czarny */
+    font-size: 15px;
+    font-weight: bold; /* Pogrubienie tekstów, aby były lepiej widoczne na ekranie telefonu */
+    line-height: 1.6;
+}
+
+/* Dodatkowo: styl dla wartości liczbowych obok suwaków (jeśli ich używasz) */
+#mobilneMenu strong,
+#mobilneMenu b {
+    color: #f1c40f;    /* Jaskrawy żółty dla liczb/wartości suwaków, żeby rzucały się w oczy */
+}
+
+/* Pełny ekran bez suwaków i marginesów */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Ukrywa paski przewijania */
+    background: #0d1117; /* Domyślne, ciemne kosmiczne tło strony */
+}
+
+/* Pozycjonowanie obu płócien idealnie na sobie */
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    box-sizing: border-box;
+}
+
+
+/* Przypisanie warstw: ślady pod spodem, główny canvas nad nim */
+#canvasSlady {
+    z-index: 1;
+}
+#canvasGłówny { /* Upewnij się, że Twój górny canvas ma odpowiednie ID */
+    z-index: 2;
+}
+
+/* Przycisk "I" w lewym górnym rogu ekranu */
+#przyciskInfo {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 9998;
+    background: #9b59b6; /* Elegancki fioletowy kolor, aby odróżniał się od MENU */
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 50%; /* Idealne koło */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#przyciskInfo:active {
+    background: #8e44ad;
+}
+
+/* Wyskakujące okienko Informacji */
+#oknoInfo {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #1e272e;
+    color: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    border: 2px solid #9b59b6; /* Fioletowa ramka pasująca do przycisku */
+    box-shadow: 0px 10px 30px rgba(0,0,0,0.8);
+    z-index: 9999;
+    width: 85%;
+    max-width: 380px;
+    display: none; /* Domyślnie ukryte */
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+#oknoInfo h3 {
+    margin-top: 0;
+    color: #9b59b6;
+    font-size: 22px;
+    border-bottom: 2px solid #34495e;
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+}
+
+/* Formatowanie listy wewnątrz info */
+#oknoInfo ul {
+    padding-left: 20px;
+    margin: 10px 0;
+}
+
+#oknoInfo li, #oknoInfo p {
+    color: #dcdde1;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 8px;
+}
+/* Panel statystyk na ekranie głównym */
+#panelStatystyk {
+    position: fixed;
+    bottom: 15px;
+    left: 15px;
+    z-index: 9990; /* Nad kosmosem, ale pod oknami menu */
+    background: rgba(13, 17, 23, 0.65); /* Półprzezroczyste, ciemne tło */
+    border: 1px solid rgba(52, 152, 219, 0.3); /* Delikatna niebieska ramka */
+    padding: 10px 15px;
+    border-radius: 8px;
+    backdrop-filter: blur(4px); /* Efekt rozmycia tła pod tekstem (bardzo nowoczesny) */
+    font-family: 'Courier New', Courier, monospace; /* Czcionka techniczna/komputerowa */
+    pointer-events: none; /* Kliknięcia przechodzą PRZEZ panel, więc można pod nim tworzyć planety! */
+}
+
+/* Wygląd poszczególnych linii tekstu */
+#panelStatystyk div {
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: bold;
+    margin: 3px 0;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+}
+
+/* Wyróżnienie jaskrawym kolorem dynamicznych wartości liczbowych */
+#panelStatystyk strong {
+    color: #f1c40f; /* Żółty kolor dla liczb */
+}
+
+ 
