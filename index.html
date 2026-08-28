@@ -54,6 +54,23 @@
             font-size: 13px;
             color: #555;
         }
+		/* Styl dla ukrytego menu/okna */
+#mobilneMenu {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Centrowanie na środku ekranu */
+    background: rgba(44, 62, 80, 0.95); /* Ciemne, lekko przezroczyste tło */
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 20px rgba(0,0,0,0.5);
+    z-index: 9999; /* Zawsze na wierzchu */
+    width: 80%;
+    max-width: 400px;
+    display: none; /* Domyślnie schowane */
+}
+
     </style>
 </head>
 <body>
@@ -64,7 +81,15 @@
         <canvas id="canvasPlanety" width="600" height="800"></canvas>
     </div>
 
-<div id="panel-sterowania">
+<!-- Kontener na całe Twoje menu symulatora -->
+<div id="mobilneMenu" class="ukryte-menu">
+    <button onclick="ZamknijMenu(event)" style="float:right; background:#e74c3c; color:white; border:none; padding:5px 10px; cursor:pointer;">X Zamknij</button>
+    
+    <h3>Menu Symulatora</h3>
+    <!-- TUTAJ WSTAW SWOJE DOTYCHCZASOWE PRZYCISKI I SUWAKI (Bum, Ślady, Masa itp.) -->
+    <!-- Np. Twój suwak masy, przycisk czyszczenia ekranu itp. -->
+	
+	<div id="panel-sterowania">
 
 <span class="opcja" style="white-space: nowrap;">
     <select id="idTYP_BUM">
@@ -75,6 +100,7 @@
 	
 	<button onclick="FZoomMobilny(1.2)" id="btnZoomPlus" style="font-weight:bold; padding: 5px 12px; font-size: 16px;">[ + ]</button>
 	<button onclick="FZoomMobilny(0.8)" id="btnZoomMinus" style="font-weight:bold; padding: 5px 12px; font-size: 16px;">[ - ]</button>
+	<button onclick="WyczyscWszystko()" style="font-weight:bold; padding: 5px 12px; font-size: 16px;">C</button>
 </span>
 <br>
         <!-- Tryby symulacji -->
@@ -114,6 +140,11 @@
 		</div>
 
     </div>
+	
+</div>
+
+
+
 
 
     <!-- Skrypty sterujące mechaniką i fizyką układu -->

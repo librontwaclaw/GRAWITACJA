@@ -130,8 +130,24 @@ function animacja() {
 			
 			var gr = document.getElementById("GR").checked;
 			if (gr == true){
-				if (PLANETY[i].x < 0 || PLANETY[i].x > w) PLANETY[i].vx = -PLANETY[i].vx;
-				if (PLANETY[i].y < 0 || PLANETY[i].y > h) PLANETY[i].vy = -PLANETY[i].vy;
+				//if (PLANETY[i].x < 0 || PLANETY[i].x > w) PLANETY[i].vx = -PLANETY[i].vx;
+				//if (PLANETY[i].y < 0 || PLANETY[i].y > h) PLANETY[i].vy = -PLANETY[i].vy;
+
+				// NOWY KOD (Poprawny):
+var srodekX = w / 2;
+var srodekY = h / 2;
+
+// Wyznaczamy fizyczne granice ekranu na podstawie aktualnej skali
+var minX = srodekX - (srodekX / skala) + PLANETY[i].r;
+var maxX = srodekX + (srodekX / skala) - PLANETY[i].r;
+var minY = srodekY - (srodekY / skala) + PLANETY[i].r;
+var maxY = srodekY + (srodekY / skala) - PLANETY[i].r;
+
+if (PLANETY[i].x < minX) { PLANETY[i].x = minX; PLANETY[i].vx = -PLANETY[i].vx; }
+if (PLANETY[i].x > maxX) { PLANETY[i].x = maxX; PLANETY[i].vx = -PLANETY[i].vx; }
+if (PLANETY[i].y < minY) { PLANETY[i].y = minY; PLANETY[i].vy = -PLANETY[i].vy; }
+if (PLANETY[i].y > maxY) { PLANETY[i].y = maxY; PLANETY[i].vy = -PLANETY[i].vy; }
+
 			}
 			Planeta(PLANETY[i]);
 		}
@@ -205,8 +221,15 @@ function Planeta(planetaObj) {
 function ObslugaMyszki(){
 	if (MyszPrzycisk == 1){
 		LINIA(MYSZKAon.x, MYSZKAon.y, MYSZKA.x, MYSZKA.y, "red");
-		PLANETA.x = MYSZKAon.x;
-		PLANETA.y = MYSZKAon.y;
+		//PLANETA.x = MYSZKAon.x;
+		//PLANETA.y = MYSZKAon.y;
+		
+		// Wklej to (odwrócenie transformacji ekranowej na fizyczną):
+var srodekX = w / 2;
+var srodekY = h / 2;
+PLANETA.x = srodekX + (MYSZKAon.x - srodekX) / skala;
+PLANETA.y = srodekY + (MYSZKAon.y - srodekY) / skala;
+
 		PLANETA.r = idMAS.value / 10;
 		PLANETA.m = idMAS.value * 1.0;
 	}
@@ -360,10 +383,28 @@ function Verlet(){
 		PLANETY[i].vy += 0.5 * (PLANETY[i].old_ay + PLANETY[i].ay) * dt;
 		
 		var gr = document.getElementById("GR").checked;
+		/*
 		if (gr == true){
 			if (PLANETY[i].x < 0 || PLANETY[i].x > w) PLANETY[i].vx = -PLANETY[i].vx;
 			if (PLANETY[i].y < 0 || PLANETY[i].y > h) PLANETY[i].vy = -PLANETY[i].vy;
 		}
+		*/
+		// NOWY KOD w funkcji Verlet() (Poprawny):
+if (gr == true){
+	var srodekX = w / 2;
+	var srodekY = h / 2;
+	
+	var minX = srodekX - (srodekX / skala) + PLANETY[i].r;
+	var maxX = srodekX + (srodekX / skala) - PLANETY[i].r;
+	var minY = srodekY - (srodekY / skala) + PLANETY[i].r;
+	var maxY = srodekY + (srodekY / skala) - PLANETY[i].r;
+
+	if (PLANETY[i].x < minX) { PLANETY[i].x = minX; PLANETY[i].vx = -PLANETY[i].vx; }
+	if (PLANETY[i].x > maxX) { PLANETY[i].x = maxX; PLANETY[i].vx = -PLANETY[i].vx; }
+	if (PLANETY[i].y < minY) { PLANETY[i].y = minY; PLANETY[i].vy = -PLANETY[i].vy; }
+	if (PLANETY[i].y > maxY) { PLANETY[i].y = maxY; PLANETY[i].vy = -PLANETY[i].vy; }
+}
+
 		
 		Planeta(PLANETY[i]);
 	}
@@ -571,4 +612,63 @@ function FZoomMobilny(mnoznik) {
 	if (typeof GR_SLADY !== 'undefined') {
 		GR_SLADY.clearRect(0, 0, w, h);
 	}
+}
+
+// Funkcja usuwająca wszystkie planety i czyszcząca ekrany
+function WyczyscWszystko() {
+	// 1. Zerujemy tablicę obiektów
+	PLANETY.length = 0;
+	
+	// 2. Wyłączamy ewentualną aktywną supernową
+	supernowaAktywna = false;
+	
+	// 3. Natychmiastowo czyścimy oba płótna (canvas)
+	if (typeof GR !== 'undefined') GR.clearRect(0, 0, w, h);
+	if (typeof GR_SLADY !== 'undefined') GR_SLADY.clearRect(0, 0, w, h);
+	
+	// 4. Aktualizujemy licznik obiektów w UI na 0
+	var idKULE = document.getElementById("idKULE");
+	if (idKULE) idKULE.innerHTML = 0;
+	
+	// 5. Resetujemy statystykę maksymalnej masy w UI
+	var idMAX_MASA = document.getElementById("idMAX_MASA");
+	if (idMAX_MASA) idMAX_MASA.innerHTML = 0;
+}
+
+// Zmienne do rozróżnienia kliknięcia od przeciągnięcia
+var czasStartuDotyku = 0;
+
+// Podepnij zdarzenie kliknięcia/tapnięcia pod główny canvas (zakładam, że nazywa się canvas)
+var canvasEkran = document.getElementById("canvasSlady") || document.getElementsByTagName("canvas")[0];
+
+if (canvasEkran) {
+    canvasEkran.addEventListener("mousedown", function(e) {
+        czasStartuDotyku = Date.now();
+    });
+
+    canvasEkran.addEventListener("mouseup", function(e) {
+        var czasTrwania = Date.now() - czasStartuDotyku;
+        
+        // Jeśli kliknięcie trwało krócej niż 200ms, traktujemy to jako zwykłe stuknięcie (TAP)
+        if (czasTrwania < 200 && MyszPrzycisk === 0) {
+            OtworzMenu();
+        }
+    });
+}
+
+function OtworzMenu() {
+    var menu = document.getElementById("mobilneMenu");
+    if (menu) {
+        menu.style.display = "block";
+        pauza = true; // Opcjonalnie: zatrzymujemy symulację, gdy gracz konfiguruje opcje
+    }
+}
+
+function ZamknijMenu(e) {
+    if (e) e.stopPropagation(); // Blokuje aktywację kliknięcia pod menu
+    var menu = document.getElementById("mobilneMenu");
+    if (menu) {
+        menu.style.display = "none";
+        pauza = false; // Wznawiamy fizykę po zamknięciu menu
+    }
 }
